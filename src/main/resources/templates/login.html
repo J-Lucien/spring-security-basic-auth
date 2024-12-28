@@ -17,14 +17,18 @@
             Nom d'utilisateur ou mot de passe invalide.
         </div>
 
+        <div th:if="${param.blocked}" style="color: red;">
+            Too many failed attempts. IP is blocked.
+        </div>
+
 
         <div th:if="${param.logout}" style="color: green;">
             Vous vous êtes déconnecté avec succès.
         </div>
 
-        <div th:if="${message}" style="color: red;">
-            <p th:text="${message}"></p>
-        </div>
+<!--        <div th:if="${message}" style="color: red;">-->
+<!--            <p th:text="${message}"></p>-->
+<!--        </div>-->
 
         <div>
             <label for="username">Nom d'utilisateur :</label>

@@ -2,9 +2,12 @@ package example.hello_security.config;
 
 import example.hello_security.filter.CustomAuthenticationSuccessHandler;
 import example.hello_security.filter.CustomLogOutSuccessHandler;
+import example.hello_security.filter.IpBlockFilter;
 import example.hello_security.filter.exception.CustomAccessDeniedHandler;
 import example.hello_security.filter.exception.CustomAuthenticationEntryPoint;
 import example.hello_security.filter.exception.CustomAuthenticationFailureHandler;
+import example.hello_security.ip.IPservice;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -24,44 +27,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class DefaultSecurityConfig {
 
+    private final IpBlockFilter ipBlockFilter;
+    private final CustomAuthenticationSuccessHandler successHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
-//    @Bean
-//    @ConditionalOnMissingBean(UserDetailsService.class)
-//    InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-//        return new InMemoryUserDetailsManager(User.withUsername("User")
-//                .password("{noop}password")
-//                .build());
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public CustomAccessDeniedHandler accessDeniedHandler(){
-        return new CustomAccessDeniedHandler();
-    }
-
-    @Bean
-    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint(){
-        return new CustomAuthenticationEntryPoint();
-    }
-
-    @Bean
-    public CustomAuthenticationFailureHandler failureHandler(){
-        return new CustomAuthenticationFailureHandler();
-    }
-
-    @Bean
-    public CustomAuthenticationSuccessHandler successHandler(){
-        return new CustomAuthenticationSuccessHandler();
-    }
 
     @Bean
     public CustomLogOutSuccessHandler logOutSuccessHandler(){
@@ -103,9 +86,9 @@ public class DefaultSecurityConfig {
                 .formLogin(form -> form
                                 .loginProcessingUrl("/login")
                                 .loginPage("/login")
-                        .failureHandler(failureHandler())
+                        .failureHandler(failureHandler)
 //                        .defaultSuccessUrl("/home") // ou
-                        .successHandler(successHandler())
+                        .successHandler(successHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -118,13 +101,13 @@ public class DefaultSecurityConfig {
                 )
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/css/**","/js/**","/images/**","/logout-success/**","/login/**").permitAll()
+                        .requestMatchers("/css/**","/js/**","/images/**","/logout-success/**","/login/**","/blocked/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
-                        .accessDeniedHandler(accessDeniedHandler()) // ou
+                        .accessDeniedHandler(accessDeniedHandler) // ou
 //                        .authenticationEntryPoint(customAuthenticationEntryPoint())
                 )
-
+                .addFilterBefore(ipBlockFilter, BasicAuthenticationFilter.class)
                 .build();
     }
 
