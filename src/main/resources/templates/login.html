@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/Style.css">
+</head>
+<body>
+<header>
+    <h1>Connexion</h1>
+</header>
+
+<main>
+    <form th:action="@{/login}" method="post">
+
+        <div th:if="${param.error}" style="color: red;">
+            Nom d'utilisateur ou mot de passe invalide.
+        </div>
+
+
+        <div th:if="${param.logout}" style="color: green;">
+            Vous vous êtes déconnecté avec succès.
+        </div>
+
+        <div th:if="${message}" style="color: red;">
+            <p th:text="${message}"></p>
+        </div>
+
+        <div>
+            <label for="username">Nom d'utilisateur :</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+
+        <div>
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+
+        <div>
+            <button type="submit">Se connecter</button>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <p>&copy; 2024 Mon Application</p>
+</footer>
+</body>
+</html>

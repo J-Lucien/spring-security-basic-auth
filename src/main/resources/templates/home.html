@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <link rel="stylesheet" href="/css/Style.css">
+</head>
+<body>
+<header>
+    <h1>Bienvenue, <span th:text="${username}">Utilisateur</span>!</h1>
+</header>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Déconnexion</button>
+</form>
+<main>
+    <h2>Liste des éléments</h2>
+    <ul>
+        <li th:each="item : ${items}" th:text="${item}">Item</li>
+    </ul>
+</main>
+
+<footer>
+    <p>&copy; 2024 Mon Application</p>
+</footer>
+</body>
+</html>
