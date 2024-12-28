@@ -41,4 +41,4 @@ jobs:
     # Step 6: Push docker image
     - name: Push Docker image
       run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/hello-security:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/spring-basic-auth:latest
