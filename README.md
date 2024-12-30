@@ -1,6 +1,6 @@
 # Spring Boot Application with Enhanced Security Features
 
-This repository contains a simple Spring Boot application designed to demonstrate the implementation of basic and advanced security measures using Spring Security. The project is intended for learning purposes and showcases how to incorporate IP filtering, CAPTCHA verification, response delay mechanisms, and more into a Spring Boot application.
+This application is an implementation of Spring Security Basic, designed to integrate my cybersecurity expertise into development. It incorporates essential mechanisms to enhance application security, including robust protection against brute force attacks, which is vital for preventing unauthorized access.
 
 ## Features
 
