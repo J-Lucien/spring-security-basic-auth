@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -31,8 +32,11 @@ public class IPservice {
 
     public void resetFailedAttempt(String ipAddress){
         FailedAttempt failedAttempt = attemptConcurrentHashMap.get(ipAddress);
-        failedAttempt.setCount(0);
-        attemptConcurrentHashMap.put(ipAddress, failedAttempt);
+        if(Objects.nonNull(failedAttempt)){
+            failedAttempt.setCount(0);
+            attemptConcurrentHashMap.put(ipAddress, failedAttempt);
+        }
+
     }
 
     public boolean isBlocked(String ipAddress){
