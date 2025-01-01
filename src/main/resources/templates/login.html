@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="/css/Style.css">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+            async defer>
+    </script>
 </head>
 <body>
 <header>
@@ -11,7 +14,7 @@
 </header>
 
 <main>
-    <form th:action="@{/login}" method="post">
+    <form id="loginForm" th:action="@{/login}" method="post">
 
         <div th:if="${param.error}" style="color: red;">
             Nom d'utilisateur ou mot de passe invalide.
@@ -26,9 +29,9 @@
             Vous vous êtes déconnecté avec succès.
         </div>
 
-<!--        <div th:if="${message}" style="color: red;">-->
-<!--            <p th:text="${message}"></p>-->
-<!--        </div>-->
+        <!--        <div th:if="${message}" style="color: red;">-->
+        <!--            <p th:text="${message}"></p>-->
+        <!--        </div>-->
 
         <div>
             <label for="username">Nom d'utilisateur :</label>
@@ -40,8 +43,13 @@
             <label for="password">Mot de passe :</label>
             <input type="password" value="password" id="password" name="password" required>
         </div>
+        <div th:if="${recaptchaRequired}">
+            <input id="g-recaptcha-response" type="hidden" name="g-recaptcha-response">
+            <input id="siteKey" type="hidden" name="siteKey" th:value="${recaptchaSiteKey}">
+            <input id="recaptchaRequired" type="hidden" name="recaptchaRequired" th:value="${recaptchaRequired}">
+        </div>
 
-
+        <div th:if="${recaptchaRequired}" id="captcha"></div>
         <div>
             <button type="submit">Se connecter</button>
         </div>
@@ -51,5 +59,32 @@
 <footer>
     <p>&copy; 2024 Mon Application</p>
 </footer>
+<script type="text/javascript">
+    var recaptchaRequired = document.getElementById('recaptchaRequired');
+    var recaptchaSiteKey = '';
+    if(recaptchaRequired) {
+        recaptchaRequired = recaptchaRequired.value === 'true';
+        recaptchaSiteKey = document.getElementById('siteKey').value;
+    }
+    var onloadCallback = function() {
+        if (recaptchaRequired) {
+             grecaptcha.render('captcha', {
+               'sitekey' : recaptchaSiteKey
+             });
+        }
+    };
+
+   var submit = document.querySelector('button[type="submit"]');
+   submit.addEventListener('click', function() {
+        if (recaptchaRequired) {
+           var response = grecaptcha.getResponse();
+           document.getElementById('g-recaptcha-response').value = response;
+           if (response.length === 0) {
+               alert('Please validate the captcha.');
+               event.preventDefault();
+           }
+        }
+   });
+</script>
 </body>
 </html>

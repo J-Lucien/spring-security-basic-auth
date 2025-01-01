@@ -1,12 +1,12 @@
 package example.hello_security.config;
 
+import example.hello_security.filter.CaptchaAuthenticationFilter;
 import example.hello_security.filter.CustomAuthenticationSuccessHandler;
 import example.hello_security.filter.CustomLogOutSuccessHandler;
 import example.hello_security.filter.IpBlockFilter;
 import example.hello_security.filter.exception.CustomAccessDeniedHandler;
 import example.hello_security.filter.exception.CustomAuthenticationEntryPoint;
 import example.hello_security.filter.exception.CustomAuthenticationFailureHandler;
-import example.hello_security.ip.IPservice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,6 +18,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -27,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @EnableWebSecurity
@@ -38,7 +40,7 @@ public class DefaultSecurityConfig {
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
-
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -58,6 +60,12 @@ public class DefaultSecurityConfig {
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(userDetails);
+    }
+
+    @Bean
+    public CaptchaAuthenticationFilter captchaAuthenticationFilter() throws Exception {
+        CaptchaAuthenticationFilter captchaAuthenticationFilter = new CaptchaAuthenticationFilter();
+        return captchaAuthenticationFilter;
     }
 
     @Bean
@@ -104,10 +112,11 @@ public class DefaultSecurityConfig {
                         .requestMatchers("/css/**","/js/**","/images/**","/logout-success/**","/login/**","/blocked/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
-                        .accessDeniedHandler(accessDeniedHandler) // ou
-//                        .authenticationEntryPoint(customAuthenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .addFilterBefore(ipBlockFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(captchaAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

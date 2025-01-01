@@ -19,6 +19,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         iPservice.resetFailedAttempt(request.getRemoteAddr());
+        iPservice.setCaptchaRequired(request.getRemoteAddr(),false);
         response.sendRedirect("/home");
     }
 }

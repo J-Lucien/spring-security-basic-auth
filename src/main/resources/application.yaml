@@ -10,3 +10,8 @@ logging:
     org:
       springframework:
         security: DEBUG
+
+captcha:
+  url: https://www.google.com/recaptcha/api/siteverify
+  sitekey: 6Lc_qqoqAAAAAGlov3_Ks4zhJVz0z4T84BobSywK
+  secret: 6Lc_qqoqAAAAAFIYXAZUf1uiMjOQf_BTAOhWzvx3

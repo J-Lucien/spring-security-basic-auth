@@ -13,9 +13,6 @@ import java.io.IOException;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//        response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
-        response.getOutputStream().println("{ \"errors\": \"" + accessDeniedException.getMessage() + "\" }");
+       response.sendRedirect("/home");
     }
 }
