@@ -10,9 +10,11 @@ This application is an implementation of Spring Security Basic, designed to inte
 2. **IP-Based Rate Limiting**
   
   - Prevents attackers from making a large number of attempts in a short period.
-3. **CAPTCHA Verification** (In Progress)
+3. **CAPTCHA Verification**
   
-  - Implements CAPTCHA after several failed attempts to block automated attacks.
+  - implement CAPTCHA after multiple failed login attempts to block automated attacks
+  - Blocks access for 30 seconds after exceeding failed attempts
+  - Requires CAPTCHA verification for subsequent login attempts
 4. **Brute Force Mitigation** (In Progress)
   
   - While these measures do not guarantee the complete elimination of threats, they make the attack process sufficiently tedious to discourage attackers.
