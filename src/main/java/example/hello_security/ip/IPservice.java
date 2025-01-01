@@ -17,7 +17,7 @@ public class IPservice {
 
     public void addFailedAttempt(String ipAddress){
         if(attemptConcurrentHashMap.get(ipAddress) == null){
-            attemptConcurrentHashMap.put(ipAddress, new FailedAttempt(System.currentTimeMillis(), 1));
+            attemptConcurrentHashMap.put(ipAddress, new FailedAttempt(System.currentTimeMillis(), 1,false));
         }else{
             FailedAttempt failedAttempt = attemptConcurrentHashMap.get(ipAddress);
             failedAttempt.setCount(failedAttempt.getCount() + 1);
@@ -61,6 +61,22 @@ public class IPservice {
             return failedAttempt.getCount();
         }
         return 0;
+    }
+
+    public void setCaptchaRequired(String ipAddress,boolean captchaRequired){
+        FailedAttempt failedAttempt = getFailedAttempt(ipAddress);
+        if(failedAttempt != null){
+            failedAttempt.setCaptchaRequired(captchaRequired);
+            attemptConcurrentHashMap.put(ipAddress, failedAttempt);
+        }
+    }
+
+    public boolean isReCaptchaRequired(String ipAddress){
+        FailedAttempt failedAttempt = getFailedAttempt(ipAddress);
+        if(failedAttempt != null){
+            return failedAttempt.isCaptchaRequired();
+        }
+        return false;
     }
 
 }

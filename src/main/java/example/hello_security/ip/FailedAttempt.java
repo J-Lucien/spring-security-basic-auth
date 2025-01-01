@@ -8,4 +8,5 @@ import lombok.*;
 public class FailedAttempt {
     private long lastAccessTime;
     private int count;
+    private boolean captchaRequired;
 }
