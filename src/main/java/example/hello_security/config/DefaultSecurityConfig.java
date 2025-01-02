@@ -18,7 +18,6 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -30,6 +29,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @EnableWebSecurity
 @Configuration
@@ -41,6 +41,7 @@ public class DefaultSecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CaptchaAuthenticationFilter captchaAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -62,11 +63,6 @@ public class DefaultSecurityConfig {
         return new InMemoryUserDetailsManager(userDetails);
     }
 
-    @Bean
-    public CaptchaAuthenticationFilter captchaAuthenticationFilter() throws Exception {
-        CaptchaAuthenticationFilter captchaAuthenticationFilter = new CaptchaAuthenticationFilter();
-        return captchaAuthenticationFilter;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -89,6 +85,8 @@ public class DefaultSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         System.out.println("FilterChain Configuration");
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setMatchingRequestParameterName("continue");
         return httpSecurity
                 .csrf(Customizer.withDefaults())
                 .formLogin(form -> form
@@ -103,7 +101,7 @@ public class DefaultSecurityConfig {
                         .logoutUrl("/logout")
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
-                                .logoutSuccessUrl("/login?logout=true") // ceci est par defaut ou
+                                .logoutSuccessUrl("/login?logout=true")
 //                        .logoutSuccessHandler(logOutSuccessHandler())
                         .permitAll()
                 )
@@ -115,8 +113,11 @@ public class DefaultSecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
+                .requestCache((cache) -> cache
+                        .requestCache(requestCache)
+                )
                 .addFilterBefore(ipBlockFilter, BasicAuthenticationFilter.class)
-                .addFilterBefore(captchaAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(captchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
