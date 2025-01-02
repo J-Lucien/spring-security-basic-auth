@@ -15,7 +15,7 @@ This application is an implementation of Spring Security Basic, designed to inte
   - implement CAPTCHA after multiple failed login attempts to block automated attacks
   - Blocks access for 30 seconds after exceeding failed attempts
   - Requires CAPTCHA verification for subsequent login attempts
-4. **Brute Force Mitigation** (In Progress)
+4. **Brute Force Mitigation**
   
   - While these measures do not guarantee the complete elimination of threats, they make the attack process sufficiently tedious to discourage attackers.
 5. **Multi-Factor Authentication (MFA)** (In Progress)
@@ -77,3 +77,7 @@ Ensure you have the following installed:
   ```
   
 4. Access the application at `http://localhost:8081`.
+
+### Notes on Security Implementation
+
+- This project includes custom implementations, such as timing attack mitigations, even though Spring Security provides built-in protections. These additions serve as a demonstration of my understanding of secure coding practices and my ambition to create resilient applications.
