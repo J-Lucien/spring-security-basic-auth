@@ -10,6 +10,8 @@ logging:
     org:
       springframework:
         security: DEBUG
+    example:
+      hello_security: DEBUG
 
 captcha:
   url: https://www.google.com/recaptcha/api/siteverify
