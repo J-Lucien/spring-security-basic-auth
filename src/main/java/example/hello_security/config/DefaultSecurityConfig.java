@@ -1,12 +1,10 @@
 package example.hello_security.config;
 
-import example.hello_security.filter.CaptchaAuthenticationFilter;
-import example.hello_security.filter.CustomAuthenticationSuccessHandler;
-import example.hello_security.filter.CustomLogOutSuccessHandler;
-import example.hello_security.filter.IpBlockFilter;
+import example.hello_security.filter.*;
 import example.hello_security.filter.exception.CustomAccessDeniedHandler;
 import example.hello_security.filter.exception.CustomAuthenticationEntryPoint;
 import example.hello_security.filter.exception.CustomAuthenticationFailureHandler;
+import example.hello_security.provider.CustomDaoAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,8 +14,8 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -64,12 +62,12 @@ public class DefaultSecurityConfig {
     }
 
 
+
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(daoAuthenticationProvider);
+        CustomDaoAuthenticationProvider customDaoAuthenticationProvider = new CustomDaoAuthenticationProvider(passwordEncoder());
+        customDaoAuthenticationProvider.setUserDetailsService(userDetailsService());
+        return new ProviderManager(customDaoAuthenticationProvider);
     }
 
 
@@ -106,6 +104,7 @@ public class DefaultSecurityConfig {
                         .permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
+                .authenticationManager(authenticationManager())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/css/**","/js/**","/images/**","/logout-success/**","/login/**","/blocked/**").permitAll()
                         .anyRequest().authenticated())

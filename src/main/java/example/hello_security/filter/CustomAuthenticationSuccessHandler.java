@@ -19,18 +19,14 @@ import java.util.Objects;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final IPservice iPservice;
-    private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+    private final CustomRedirectStrategy customRedirectStrategy;
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         iPservice.resetFailedAttempt(request.getRemoteAddr());
         iPservice.setCaptchaRequired(request.getRemoteAddr(), false);
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (Objects.nonNull(savedRequest)) {
-            response.sendRedirect(savedRequest.getRedirectUrl());
-            return;
-        }
-        response.sendRedirect("/home");
+        customRedirectStrategy.sendRedirect(request, response, "/home");
     }
 
 
