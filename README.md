@@ -30,6 +30,7 @@ This application is an implementation of Spring Security Basic, designed to inte
   - **Test Page**: A sample page to verify access restrictions.
     
   - **Blocked Page**: Displays a message for blocked users or failed authentication attempts.
+  - **Error page**: A fallback page displayed when a user tries to access a non-existent resource.
     
 
 ## Technologies Used
