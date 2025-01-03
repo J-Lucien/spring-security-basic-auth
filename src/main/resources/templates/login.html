@@ -29,6 +29,14 @@
             Vous vous êtes déconnecté avec succès.
         </div>
 
+        <div th:if="${param.captchaError}" style="color: red;">
+            Invalid captcha. Please try again.
+        </div>
+
+        <div th:if="${param.captchaRequired}" style="color: red;">
+            Captcha is required. Please complete the captcha to proceed.
+        </div>
+
         <!--        <div th:if="${message}" style="color: red;">-->
         <!--            <p th:text="${message}"></p>-->
         <!--        </div>-->

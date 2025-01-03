@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -14,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Objects;
 
+@Slf4j
 @Setter
 public class CaptchaAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
@@ -23,25 +25,33 @@ public class CaptchaAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (new AntPathRequestMatcher("/login", "POST").matches(request)) {
+        boolean reCaptchaRequired = iPservice.isReCaptchaRequired(request.getRemoteAddr());
+        boolean matches = new AntPathRequestMatcher("/login", "POST").matches(request);
+        log.debug("matches: {}", matches);
+        if (matches) {
             String requestParameter = request.getParameter("g-recaptcha-response");
-            System.out.println("requestParameter: " + requestParameter);
-            if (iPservice.isReCaptchaRequired(request.getRemoteAddr())) { // check if captcha is required
-                if (Objects.isNull(requestParameter)) {
-                    System.out.println("Captcha is required");
-                    response.sendRedirect("/login?error=true");
+            log.debug("requestParameter: {}", requestParameter);
+            if (reCaptchaRequired) { // check if captcha is required
+                log.debug("Captcha is required for IP: {}", request.getRemoteAddr());
+                if (Objects.isNull(requestParameter) || requestParameter.isEmpty()) {
+                    log.debug("Captcha is required");
+                    response.sendRedirect("/login?captchaRequired");
                     return;
                 }
                 if (!captachaService.verifyCaptch(requestParameter)) {
-                    System.out.println("Captcha is not valid");
-                    response.sendRedirect("/login?error=true");
+                    log.debug("Captcha is not valid");
+                    response.sendRedirect("/login?captchaError");
                     return;
                 }
             }
-        } else if (new AntPathRequestMatcher("/login", "GET").matches(request)) {
-            if (iPservice.isReCaptchaRequired(request.getRemoteAddr())) {
-                request.setAttribute("recaptchaSiteKey", captachaService.getRecaptchaProperties().getSiteKey());
-                request.setAttribute("recaptchaRequired", true);
+        } else {
+            boolean get = new AntPathRequestMatcher("/login", "GET").matches(request);
+            log.debug("GET: {}", get);
+            if (get) {
+                if (reCaptchaRequired) {
+                    request.setAttribute("recaptchaSiteKey", captachaService.getRecaptchaProperties().getSiteKey());
+                    request.setAttribute("recaptchaRequired", true);
+                }
             }
         }
         filterChain.doFilter(request, response);
