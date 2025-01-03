@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
     @Autowired
@@ -26,9 +27,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
         String ipAddress = request.getRemoteAddr();
-        System.out.println("Login failed from IP: "+ ipAddress);
+        log.debug("Login failed from IP: {}", ipAddress);
         ipService.addFailedAttempt(ipAddress);
-        System.out.println("Failed attempt count: "+ ipService.getFailedAttemptCount(ipAddress));
+        log.debug("Failed attempt count: {}", ipService.getFailedAttemptCount(ipAddress));
         response.sendRedirect("/login?error=true");
     }
 }

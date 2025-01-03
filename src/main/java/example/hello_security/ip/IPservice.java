@@ -50,7 +50,7 @@ public class IPservice {
     public boolean isTimeToUnblock(String ipAddress){
         FailedAttempt failedAttempt = getFailedAttempt(ipAddress);
         if(failedAttempt != null){
-            return failedAttempt.getCount() > MAX_ATTEMPT && (System.currentTimeMillis() - failedAttempt.getLastAccessTime()) > BLOCK_DURATION;
+            return (System.currentTimeMillis() - failedAttempt.getLastAccessTime()) > BLOCK_DURATION;
         }
         return false;
     }

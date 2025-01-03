@@ -115,8 +115,8 @@ public class DefaultSecurityConfig {
                 .requestCache((cache) -> cache
                         .requestCache(requestCache)
                 )
-                .addFilterBefore(ipBlockFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(captchaAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(ipBlockFilter, CaptchaAuthenticationFilter.class)
                 .build();
     }
 
