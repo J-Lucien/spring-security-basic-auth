@@ -42,7 +42,14 @@ This application is an implementation of Spring Security Basic, designed to inte
 - **Spring Security**
   
 - **Maven**
-  
+
+## 🧪 Tests
+- **Manual tests performed using:**
+    - Burp Suite
+    - **Intruder Attack Simulation**: Conducted to test the resilience of the application against brute force attacks. Results showed effective mitigation of unauthorized access attempts. The following areas were specifically tested:
+      - **IP-Based Rate Limiting**: The application blocked access after a certain number of failed attempts.
+      - **CAPTCHA Verification**: The application required CAPTCHA verification after multiple failed login attempts.
+      
 
 ## Getting Started
 
