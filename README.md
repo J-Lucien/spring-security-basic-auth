@@ -49,7 +49,7 @@ This application is an implementation of Spring Security Basic, designed to inte
     - **Intruder Attack Simulation**: Conducted to test the resilience of the application against brute force attacks. Results showed effective mitigation of unauthorized access attempts. The following areas were specifically tested:
       - **IP-Based Rate Limiting**: The application blocked access after a certain number of failed attempts.
       - **CAPTCHA Verification**: The application required CAPTCHA verification after multiple failed login attempts.
-      
+      - **Timing Attack Mitigation**: The application did not reveal whether the username or password was incorrect, preventing attackers from using timing attacks to determine the validity of their guesses.
 
 ## Getting Started
 
